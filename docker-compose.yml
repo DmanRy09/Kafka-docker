@@ -1,0 +1,46 @@
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.1
+    container_name: kafka-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.1
+    container_name: kafka-broker
+    depends_on:
+      - zookeeper
+    ports:
+      - "29092:29092"  # Access from host via localhost:29092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kafka-consumer-app
+    depends_on:
+      - kafka
+    volumes:
+      - ./:/usr/src/app
+    working_dir: /usr/src/app
+    command: ["npm", "run", "start:consumer"]
+    environment:
+      # Kafka Configuration
+      KAFKA_BROKER: kafka:9092
+      GROUP_ID: app-consumer-group
+
+      # MongoDB Atlas Configuration
+      MONGODB_URI: ${MONGODB_URI}
+      MONGO_DB_NAME: ClearVue
+
+      # Topics to subscribe to
+      TOPICS: age_analysis,payments,purchases,sales_transactions,customer,products,representative,suppliers,sales

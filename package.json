@@ -1,0 +1,40 @@
+{
+  "name": "kafka-docker-app",
+  "version": "1.0.0",
+  "description": "A Kafka application using Docker for ClearVue data pipeline",
+  "main": "src/consumer/consumer.js",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/producer/producer.js",
+    "consume": "node src/consumer/consumer.js",
+    "start:consumer": "node src/consumer/consumer.js",
+    "topics:list": "docker-compose exec kafka kafka-topics --bootstrap-server kafka:9092 --list",
+    "topics:describe": "docker-compose exec kafka kafka-topics --bootstrap-server kafka:9092 --describe",
+    "topic:describe": "docker-compose exec kafka kafka-topics --bootstrap-server kafka:9092 --describe --topic",
+    "start:all": "node startKafka.js",
+    "create:age": "docker-compose exec kafka kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic age_analysis --partitions 1 --replication-factor 1",
+    "create:payments": "docker-compose exec kafka kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic payments --partitions 1 --replication-factor 1",
+    "create:purchases": "docker-compose exec kafka kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic purchases --partitions 1 --replication-factor 1",
+    "create:sales": "docker-compose exec kafka kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic sales_transactions --partitions 1 --replication-factor 1",
+    "create:customer": "docker-compose exec kafka kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic customer --partitions 1 --replication-factor 1",
+    "create:products": "docker-compose exec kafka kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic products --partitions 1 --replication-factor 1",
+    "create:rep": "docker-compose exec kafka kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic representative --partitions 1 --replication-factor 1",
+    "create:suppliers": "docker-compose exec kafka kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic suppliers --partitions 1 --replication-factor 1",
+    "create:all": "npm run create:age && npm run create:payments && npm run create:purchases && npm run create:sales && npm run create:customer && npm run create:products && npm run create:rep && npm run create:suppliers"
+  },
+  "dependencies": {
+    "dockerode": "^4.0.9",
+    "dotenv": "^16.6.1",
+    "kafkajs": "^2.2.4",
+    "mongodb": "^6.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.9"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "ClearVue Team",
+  "license": "ISC"
+}
