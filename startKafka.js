@@ -27,13 +27,13 @@ async function startContainer(name, image, ports, env) {
     const existing = await docker.listContainers({ all: true });
     for (const c of existing) {
       if (c.Names.includes("/" + name)) {
-        console.log(`🧹 Removing old container: ${name}`);
+        console.log(` Removing old container: ${name}`);
         const container = docker.getContainer(c.Id);
         await container.remove({ force: true });
       }
     }
 
-    console.log(`🚀 Starting ${name}...`);
+    console.log(` Starting ${name}...`);
     const container = await docker.createContainer({
       name,
       Image: image,
@@ -41,9 +41,9 @@ async function startContainer(name, image, ports, env) {
       Env: env,
     });
     await container.start();
-    console.log(`✅ ${name} started`);
+    console.log(` ${name} started`);
   } catch (err) {
-    console.error(`❌ Failed to start ${name}:`, err.message);
+    console.error(` Failed to start ${name}:`, err.message);
   }
 }
 
@@ -78,7 +78,7 @@ async function wait(ms) {
 }
 
 async function createTopics() {
-  console.log("🧠 Connecting to Kafka...");
+  console.log(" Connecting to Kafka...");
   const kafka = new Kafka({ clientId: "topic-creator", brokers: ["localhost:29092"] });
   const admin = kafka.admin();
   await admin.connect();
@@ -94,21 +94,21 @@ async function createTopics() {
   }
 
   await admin.disconnect();
-  console.log("✅ All topics ready");
+  console.log(" All topics ready");
 }
 
 async function main() {
   await startZookeeper();
-  console.log("🕓 Waiting for Zookeeper to initialize...");
+  console.log(" Waiting for Zookeeper to initialize...");
   await wait(10000);
 
   await startKafka();
-  console.log("🕓 Waiting for Kafka to initialize...");
+  console.log(" Waiting for Kafka to initialize...");
   await wait(20000);
 
   await createTopics();
 
-  console.log("🎯 Kafka and Zookeeper running. Starting consumer...");
+  console.log(" Kafka and Zookeeper running. Starting consumer...");
   await import("./src/consumer/consumer.js");
 }
 
